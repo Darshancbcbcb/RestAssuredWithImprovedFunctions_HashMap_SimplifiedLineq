@@ -13,21 +13,20 @@ import static io.restassured.RestAssured.given;
 public class ValidateFirstNameStart {
 
     List<String> firstNames = new ArrayList<>();
-    List<String> firstNameFiltered = new ArrayList<>();
-    private String firstName;
 
-
-
-
-    @Then("Validate the {string} to get the hundread users having the first name starts with {string}")
-    public void validateTheToGetTheHundreadUsersHavingTheFirstNameStartsWith(String Url, String firstAlpha) {
+    @Then("Validate the {string} to get the hundread users having the first name starts with {string} {int}")
+    public void validateTheToGetTheHundreadUsersHavingTheFirstNameStartsWith(String Url, String firstAlpha, int lengthFirstName) {
         //Arrange
         Response res = given().contentType(ContentType.JSON).when().get(Url);
 
-        //Act
-        List<String> listOfFirstNames = UserUtils.appendFirstName(firstAlpha, res);
+        for (int i = 0; i < lengthFirstName; i++)
+        {
+            String actualCountry = res.jsonPath().get("results[" + i +"].name.first");
+            firstNames.add(actualCountry);
+        }
 
-        listOfFirstNames.sort(String::compareToIgnoreCase);
+        //Act
+        List<String> listOfFirstNames = UserUtils.sortNamesStartingWith(firstNames,firstAlpha);
 
         for (String firstName : listOfFirstNames) {
            System.out.println(firstName);
